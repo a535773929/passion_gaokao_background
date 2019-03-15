@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <meta charset="UTF-8">
+    <title>login</title>
+    <script type="text/javascript">
+        function test(){
+            document.forms[0].action="register";
+            document.forms[0].submit();
+        }
+    </script>
+</head>
+<body>
+<h3>登录</h3>
+<p style="color: red" th:text="${error}"></p>
+<form method="post" action="tologin" id="form1">
+    用户名：<input type="text" name="name">
+    <br>
+    密码：<input type="password" name="password">
+    <br>
+
+</form>
+<input type="submit" value="登录" form="form1">&nbsp;<button onclick="test()">注册</button>
+</body>
+</html>
