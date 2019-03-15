@@ -1,13 +1,10 @@
 package com.example.demo.service;
 
 import com.example.demo.mapper.UserMapper;
-import com.example.demo.pojo.User;
+import com.example.demo.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import javax.annotation.Resource;
 
 /**
  * @Package: com.example.demo.service
@@ -20,7 +17,7 @@ import javax.annotation.Resource;
 public class RegisterService {
     @Autowired
     private UserMapper userMapper;
-
+//    判断用户是否存在
     public boolean hasUser(String name){
 
         try {
@@ -28,18 +25,12 @@ public class RegisterService {
         System.out.println(user.getPassword());
             return true;
         }catch (Exception e){
-            System.out.println(e);
             return false;
         }
     }
-//    事物回滚，如果添加失败则自动回滚。不会写入垃圾数据
-    @Transactional
-    public boolean register(String name,String password){
-        try {
+//    注册新用户。若写入失败，则抛出RuntimeException异常。系统捕获到之后会进行回滚！但是不能catch到此异常后自己处理！！！
+@Transactional
+    public void register(String name,String password)throws Exception{
             userMapper.save(name,password);
-            return true;
-        }catch (Exception e){
-            return false;
-        }
     }
 }
