@@ -11,6 +11,8 @@ import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
 import org.apache.shiro.web.servlet.SimpleCookie;
 import org.apache.shiro.web.session.mgt.DefaultWebSessionManager;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -29,14 +31,11 @@ import java.util.*;
  */
 @Configuration
 @Component
-//@ConfigurationProperties(prefix = "hayek.shiro")
 public class ShiroConfig {
+    @Value("${MyRedis.GlobalSessionTimeout}")
+    int session_time_out;
     @Autowired
     RedisTemplate redisTemplate;
-//    @Value("${hayek.shiro.sessionTimeout}")
-//    private long sessionTimeout;
-//    @Value("${hayek.shiro.sessionIdName}")
-//    private String SessionIdName;
     @Bean
     public static LifecycleBeanPostProcessor getLifecycleBeanPostProcessor() {
         return new LifecycleBeanPostProcessor();
@@ -76,6 +75,7 @@ public class ShiroConfig {
         filterChainDefinitionMap.put("/register", "anon");
         filterChainDefinitionMap.put("/unAuth", "anon");
         filterChainDefinitionMap.put("/test", "anon");
+        filterChainDefinitionMap.put("/Captcha.jpg","anon");
         filterChainDefinitionMap.put("/adduser", "perms[add]");
         filterChainDefinitionMap.put("/updateuser", "perms[update]");
 //        退出登陆操作！！！doLogout可以不再controller中出现，shiro拦截它后直接执行登陆退出操作（也可以自己实现subject.logout()---适用于退出登陆前还有其他自定义操作）
@@ -111,12 +111,12 @@ public class ShiroConfig {
     private DefaultWebSessionManager sessionManager() {
         DefaultWebSessionManager sessionManager = new DefaultWebSessionManager();
         // 设置session超时时间，单位为毫秒
-        sessionManager.setGlobalSessionTimeout(1800000l);
+        long SESSION_TIME_OUT=session_time_out;
+        sessionManager.setGlobalSessionTimeout(SESSION_TIME_OUT);
         sessionManager.setSessionIdCookie(new SimpleCookie("sid"));
         // 网上各种说要自定义sessionDAO 其实完全不必要，shiro自己就自定义了一个，可以直接使用，还有其他的DAO，自行查看源码即可
 //        sessionManager.setSessionDAO(new EnterpriseCacheSessionDAO());
         sessionManager.setSessionDAO(new MySessionDAO());
-
         return sessionManager;
     }
     /**
