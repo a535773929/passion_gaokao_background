@@ -1,5 +1,7 @@
 package com.example.demo.entity;
 
+import java.io.Serializable;
+
 /**
  * @Package: com.example.demo.entity
  * @ClassName: User
@@ -7,7 +9,8 @@ package com.example.demo.entity;
  * @Description: ${description}
  * @Version: 1.0
  */
-public class User {
+public class User implements Serializable {
+
     public Integer getId() {
         return id;
     }
