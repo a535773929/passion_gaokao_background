@@ -37,7 +37,7 @@ import java.util.Map;
 @Component
 public class ShiroConfig {
     @Value("${MyRedis.globalSessionTimeout}")
-    private int session_time_out;
+    private int SESSION_TIME_OUT;
     @Value("${MyRedis.cookieTimeout}")
     private int COOCKIE_TIME_OUT;
     @Autowired
@@ -46,7 +46,6 @@ public class ShiroConfig {
     public static LifecycleBeanPostProcessor getLifecycleBeanPostProcessor() {
         return new LifecycleBeanPostProcessor();
     }
-
 
     /**
      * ShiroFilterFactoryBean 处理拦截资源文件问题。
@@ -119,22 +118,14 @@ public class ShiroConfig {
     private DefaultWebSessionManager sessionManager() {
         DefaultWebSessionManager sessionManager = new DefaultWebSessionManager();
         // 设置session超时时间，单位为毫秒(@VALUE参数绑定不支持long型，所以要手动转换)
-        long SESSION_TIME_OUT=session_time_out;
-        sessionManager.setGlobalSessionTimeout(123456L);
+        long long_SESSION_TIME_OUT=SESSION_TIME_OUT;
+        sessionManager.setGlobalSessionTimeout(long_SESSION_TIME_OUT);
+//        默认名为: JSESSIONID 问题: 与SERVLET容器名冲突,重新定义为sid
         sessionManager.setSessionIdCookie(new SimpleCookie("sid"));
-        // 网上各种说要自定义sessionDAO 其实完全不必要，shiro自己就自定义了一个，可以直接使用，还有其他的DAO，自行查看源码即可
-//        sessionManager.setSessionDAO(new EnterpriseCacheSessionDAO());
+        // 必须自定义sessionDAO
         sessionManager.setSessionDAO(new MySessionDAO());
         return sessionManager;
     }
-    /**
-     * SessionDAO的作用是为Session提供CRUD并进行持久化的一个shiro组件
-     * MemorySessionDAO 直接在内存中进行会话维护
-     * EnterpriseCacheSessionDAO  提供了缓存功能的会话维护，默认情况下使用MapCache实现，内部使用ConcurrentHashMap保存缓存的会话。
-     * @return
-     */
-
-
 
     @Bean
     public DBRealm getDBRealm(){
@@ -153,7 +144,7 @@ public class ShiroConfig {
      */
     private SimpleCookie rememberMeCookie() {
         // 这里的Cookie的默认名称是 CookieRememberMeManager.DEFAULT_REMEMBER_ME_COOKIE_NAME
-        SimpleCookie cookie = new SimpleCookie(CookieRememberMeManager.DEFAULT_REMEMBER_ME_COOKIE_NAME);
+        SimpleCookie cookie = new SimpleCookie("rememberMe");
         // 是否只在https情况下传输
         cookie.setSecure(false);
         // 设置 cookie 的过期时间，单位为秒，这里为一天
@@ -169,7 +160,7 @@ public class ShiroConfig {
     private CookieRememberMeManager rememberMeManager() {
         CookieRememberMeManager cookieRememberMeManager = new CookieRememberMeManager();
         cookieRememberMeManager.setCookie(rememberMeCookie());
-        // rememberMe cookie 加密的密钥
+        // rememberMe cookie 加密的密钥(必须是16位秘钥！！！！！！！！！！！！！！！！！）
         cookieRememberMeManager.setCipherKey(Base64.decode("qdaZWvohmPdUsAWT=12kml5"));
         return cookieRememberMeManager;
     }
