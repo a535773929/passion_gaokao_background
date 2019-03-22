@@ -1,26 +1,30 @@
 package com.example.demo.config;
 
 import at.pollux.thymeleaf.shiro.dialect.ShiroDialect;
+import cn.hutool.core.codec.Base64;
 import com.example.demo.cache.MySessionDAO;
 import com.example.demo.cache.ShiroRedisCacheManager;
 import com.example.demo.realm.DBRealm;
+//import com.sun.org.apache.xerces.internal.impl.dv.util.Base64;
+//import org.apache.shiro.codec.Base64;
 import org.apache.shiro.mgt.SecurityManager;
 import org.apache.shiro.spring.LifecycleBeanPostProcessor;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
+import org.apache.shiro.web.filter.authc.FormAuthenticationFilter;
+import org.apache.shiro.web.mgt.CookieRememberMeManager;
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
 import org.apache.shiro.web.servlet.SimpleCookie;
 import org.apache.shiro.web.session.mgt.DefaultWebSessionManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
-import org.springframework.util.SerializationUtils;
-import org.springframework.web.servlet.handler.SimpleMappingExceptionResolver;
 
-import java.util.*;
+import java.util.LinkedHashMap;
+import java.util.Map;
+//import java.util.*;
 
 /**
  * @Package: com.example.demo.config
@@ -32,8 +36,10 @@ import java.util.*;
 @Configuration
 @Component
 public class ShiroConfig {
-    @Value("${MyRedis.GlobalSessionTimeout}")
-    int session_time_out;
+    @Value("${MyRedis.globalSessionTimeout}")
+    private int session_time_out;
+    @Value("${MyRedis.cookieTimeout}")
+    private int COOCKIE_TIME_OUT;
     @Autowired
     RedisTemplate redisTemplate;
     @Bean
@@ -81,7 +87,7 @@ public class ShiroConfig {
 //        退出登陆操作！！！doLogout可以不再controller中出现，shiro拦截它后直接执行登陆退出操作（也可以自己实现subject.logout()---适用于退出登陆前还有其他自定义操作）
         filterChainDefinitionMap.put("/doLogout", "logout");
 //        不能只拦截部分资源，而是把所有拦截下来统一管理。
-        filterChainDefinitionMap.put("/**", "authc");
+        filterChainDefinitionMap.put("/**", "user");
 
         shiroFilterFactoryBean.setFilterChainDefinitionMap(filterChainDefinitionMap);
         return shiroFilterFactoryBean;
@@ -89,6 +95,8 @@ public class ShiroConfig {
     @Bean
     public SecurityManager securityManager(){
         DefaultWebSecurityManager securityManager =  new DefaultWebSecurityManager();
+        // 配置 rememberMeCookie 查看源码可以知道，这里的rememberMeManager就仅仅是一个赋值，所以先执行
+        securityManager.setRememberMeManager(rememberMeManager());
         // 配置 缓存管理类 cacheManager，这个cacheManager必须要在前面执行，因为setRealm 和 setSessionManage都有方法初始化了cachemanager,看下源码就知道了
         securityManager.setCacheManager(cacheManager(redisTemplate));
         //设置realm.
@@ -101,7 +109,7 @@ public class ShiroConfig {
      * 生成一个ShiroRedisCacheManager 这没啥好说的
      **/
     private ShiroRedisCacheManager cacheManager(RedisTemplate template){
-        return new ShiroRedisCacheManager(template);
+        return new ShiroRedisCacheManager(redisTemplate);
     }
     /**
      * session 管理对象
@@ -110,9 +118,9 @@ public class ShiroConfig {
      */
     private DefaultWebSessionManager sessionManager() {
         DefaultWebSessionManager sessionManager = new DefaultWebSessionManager();
-        // 设置session超时时间，单位为毫秒
+        // 设置session超时时间，单位为毫秒(@VALUE参数绑定不支持long型，所以要手动转换)
         long SESSION_TIME_OUT=session_time_out;
-        sessionManager.setGlobalSessionTimeout(SESSION_TIME_OUT);
+        sessionManager.setGlobalSessionTimeout(123456L);
         sessionManager.setSessionIdCookie(new SimpleCookie("sid"));
         // 网上各种说要自定义sessionDAO 其实完全不必要，shiro自己就自定义了一个，可以直接使用，还有其他的DAO，自行查看源码即可
 //        sessionManager.setSessionDAO(new EnterpriseCacheSessionDAO());
@@ -139,21 +147,30 @@ public class ShiroConfig {
         return new ShiroDialect();
     }
     /**
-     * 解决： 无权限页面不跳转 shiroFilterFactoryBean.setUnauthorizedUrl("/unauthorized") 无效
-     * shiro的源代码ShiroFilterFactoryBean.Java定义的filter必须满足filter instanceof AuthorizationFilter，
-     * 只有perms，roles，ssl，rest，port才是属于AuthorizationFilter，而anon，authcBasic，auchc，user是AuthenticationFilter，
-     * 所以unauthorizedUrl设置后页面不跳转 Shiro注解模式下，登录失败与没有权限都是通过抛出异常。
-     * 并且默认并没有去处理或者捕获这些异常。在SpringMVC下需要配置捕获相应异常来通知用户信息
-     * @return
+     * rememberMe cookie 效果是重开浏览器后无需重新登录
+     *
+     * @return SimpleCookie
      */
-    @Bean
-    public SimpleMappingExceptionResolver simpleMappingExceptionResolver() {
-        SimpleMappingExceptionResolver simpleMappingExceptionResolver=new SimpleMappingExceptionResolver();
-        Properties properties=new Properties();
-        //这里的 /unauthorized 是页面，不是访问的路径
-        properties.setProperty("org.apache.shiro.authz.UnauthorizedException","/unAuth");
-        properties.setProperty("org.apache.shiro.authz.UnauthenticatedException","/unAuth");
-        simpleMappingExceptionResolver.setExceptionMappings(properties);
-        return simpleMappingExceptionResolver;
+    private SimpleCookie rememberMeCookie() {
+        // 这里的Cookie的默认名称是 CookieRememberMeManager.DEFAULT_REMEMBER_ME_COOKIE_NAME
+        SimpleCookie cookie = new SimpleCookie(CookieRememberMeManager.DEFAULT_REMEMBER_ME_COOKIE_NAME);
+        // 是否只在https情况下传输
+        cookie.setSecure(false);
+        // 设置 cookie 的过期时间，单位为秒，这里为一天
+        cookie.setMaxAge(COOCKIE_TIME_OUT);
+        return cookie;
+    }
+
+    /**
+     * cookie管理对象
+     *
+     * @return CookieRememberMeManager
+     */
+    private CookieRememberMeManager rememberMeManager() {
+        CookieRememberMeManager cookieRememberMeManager = new CookieRememberMeManager();
+        cookieRememberMeManager.setCookie(rememberMeCookie());
+        // rememberMe cookie 加密的密钥
+        cookieRememberMeManager.setCipherKey(Base64.decode("qdaZWvohmPdUsAWT=12kml5"));
+        return cookieRememberMeManager;
     }
 }

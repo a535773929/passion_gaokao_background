@@ -43,7 +43,7 @@ public class WebController {
     }
 //    登录请求
     @RequestMapping("/tologin")
-    public String tologin(String name,String password,String captcha,Model m) {
+    public String tologin(String username,String password,String captcha,boolean rememberMe,Model m) {
 //        先判断验证码是否正确
         String sessionCaptcha = (String) SecurityUtils.getSubject().getSession().getAttribute(KEY_CAPTCHA);
         if (null == captcha || !captcha.equalsIgnoreCase(sessionCaptcha)) {
@@ -51,7 +51,7 @@ public class WebController {
             return "login";
         }
         Subject subject = SecurityUtils.getSubject();
-        UsernamePasswordToken token = new UsernamePasswordToken(name, password);
+        UsernamePasswordToken token = new UsernamePasswordToken(username, password,rememberMe);
         try {
             subject.login(token);
             Session session = subject.getSession();
@@ -75,7 +75,7 @@ public class WebController {
     }
 //    注册账号
     @RequestMapping("/toregister")
-    public String register(Model m, @Param("name") String name, @Param("password") String password) {
+    public String register(Model m, @Param("username") String name, @Param("password") String password) {
 //        判断用户是否已注册
         if (registerService.hasUser(name)){
             m.addAttribute("error", "用户名已存在");

@@ -22,7 +22,6 @@ public class RegisterService {
 
         try {
         User user = userMapper.getbyName(name);
-        System.out.println(user.getPassword());
             return true;
         }catch (Exception e){
             return false;

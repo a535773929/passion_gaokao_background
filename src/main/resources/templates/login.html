@@ -17,12 +17,13 @@
 <h3>登录</h3>
 <p style="color: red" th:text="${error}"></p>
 <form method="post" action="tologin" id="form1">
-    用户名：<input type="text" name="name">
+    用户名：<input type="text" name="username">
     <br>
     密码：<input type="password" name="password">
     <br>
     验证码：<input type="text" name="captcha"/><img alt="验证码" th:src="@{/Captcha.jpg}" title="点击更换" id="captcha_img"/>
     (看不清<a href="" onclick="javascript:refreshCaptcha()">换一张</a>)<br/>
+    <P><input type="checkbox" name="rememberMe" />记住我</P>
 
 </form>
 <input type="submit" value="登录" form="form1">&nbsp;<button onclick="test()">注册</button>
