@@ -35,6 +35,11 @@ public class User implements Serializable {
         this.password = password;
     }
 
+
+    public String getSalt() { return salt; }
+
+    public void setSalt(String salt) { this.salt = salt; }
+
     public String getRole() {
         return role;
     }
@@ -46,5 +51,6 @@ public class User implements Serializable {
     private Integer id;
     private String name;
     private String password;
+    private String salt;
     private String role;
 }

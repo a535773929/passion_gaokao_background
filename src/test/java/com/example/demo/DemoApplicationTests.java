@@ -15,10 +15,10 @@ import org.springframework.test.context.junit4.SpringRunner;
 public class DemoApplicationTests {
     @Autowired UserMapper usermapper;
     @Autowired RegisterService rs;
-    @Test
-    public void contextLoads() {
-
-        usermapper.save("zhang3","123456");
+//    @Test
+//    public void contextLoads() {
+//
+//        usermapper.save("zhang3","123456");
 //        User a = usermapper.getbyName("root");
 //        System.out.println(a.getPassword());
     }
@@ -36,19 +36,19 @@ public class DemoApplicationTests {
 //            System.out.println("成功");
 //        }
 //    }
-    @Test
-    public void getByName() {
-        String name = "ma6";
-        String password ="123456";
-        System.out.println(rs.hasUser(name));
-    }
-    @Test
-    public void getByName2() {
-        String name = usermapper.getbyName("li4").getPassword();
-        System.out.println(name);
-    }
-    @Test
-    public void getPerms() {
-        System.out.println(usermapper.getPerms("root"));
-    }
-}
+//    @Test
+//    public void getByName() {
+//        String name = "ma6";
+//        String password ="123456";
+//        System.out.println(rs.hasUser(name));
+//    }
+//    @Test
+//    public void getByName2() {
+//        String name = usermapper.getbyName("li4").getPassword();
+//        System.out.println(name);
+//    }
+//    @Test
+//    public void getPerms() {
+//        System.out.println(usermapper.getPerms("root"));
+//    }
+//}

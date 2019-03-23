@@ -6,11 +6,12 @@ import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.*;
 import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.authz.SimpleAuthorizationInfo;
+import org.apache.shiro.crypto.hash.SimpleHash;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.apache.shiro.subject.Subject;
+import org.apache.shiro.util.ByteSource;
 import org.springframework.beans.factory.annotation.Autowired;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,17 +42,26 @@ public class DBRealm extends AuthorizingRealm {
 
     @Override
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken authenticationToken) throws AuthenticationException {
- //        根本就不用拿到用户输入的密码，密码判定不是在这一层
-//        UsernamePasswordToken t = (UsernamePasswordToken) authenticationToken;
+//        用户输入的密码
+        UsernamePasswordToken t = (UsernamePasswordToken) authenticationToken;
+        String password =new String(t.getPassword());
         String userName = authenticationToken.getPrincipal().toString();
         User theUser = userMapper.getbyName(userName);
-        String name = theUser.getName();
-        String password = theUser.getPassword();
-        if (!userName.equals(name)){
-//			最后shiro会抛出UnknowAccountException
-            return null;
-        }
-        SimpleAuthenticationInfo a = new SimpleAuthenticationInfo(name,password,getName());
-        return a;
+//        从数据库拿出的密码（已加密）
+        String passwordInDB = theUser.getPassword();
+        String salt = theUser.getSalt();
+
+////        自定义加密比较方法
+////        把用户输入的密码用数据库取出的盐加密，得到passwordEncoded
+//        String passwordEncoded = new SimpleHash("md5",password,salt,3).toString();
+////        如果用户为空或者密码不匹配就抛错，这个错误会在上层去捕获
+//        if(null==theUser || !passwordEncoded.equals(passwordInDB)){
+//            throw new AuthenticationException();
+//        }
+////        SimpleAuthenticationInfo AuthInfo = new SimpleAuthenticationInfo(userName,password,getName());
+
+//        把加密比较的操作扔给shiro去判断（上面的方法是自己来判断，不匹配就往上层抛错）
+        SimpleAuthenticationInfo AuthInfo = new SimpleAuthenticationInfo(userName,passwordInDB, ByteSource.Util.bytes(salt),getName());
+        return AuthInfo;
     }
 }

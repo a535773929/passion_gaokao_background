@@ -5,12 +5,10 @@ import cn.hutool.core.codec.Base64;
 import com.example.demo.cache.MySessionDAO;
 import com.example.demo.cache.ShiroRedisCacheManager;
 import com.example.demo.realm.DBRealm;
-//import com.sun.org.apache.xerces.internal.impl.dv.util.Base64;
-//import org.apache.shiro.codec.Base64;
+import org.apache.shiro.authc.credential.HashedCredentialsMatcher;
 import org.apache.shiro.mgt.SecurityManager;
 import org.apache.shiro.spring.LifecycleBeanPostProcessor;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
-import org.apache.shiro.web.filter.authc.FormAuthenticationFilter;
 import org.apache.shiro.web.mgt.CookieRememberMeManager;
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
 import org.apache.shiro.web.servlet.SimpleCookie;
@@ -21,10 +19,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
-
 import java.util.LinkedHashMap;
 import java.util.Map;
-//import java.util.*;
 
 /**
  * @Package: com.example.demo.config
@@ -42,6 +38,7 @@ public class ShiroConfig {
     private int COOCKIE_TIME_OUT;
     @Autowired
     RedisTemplate redisTemplate;
+
     @Bean
     public static LifecycleBeanPostProcessor getLifecycleBeanPostProcessor() {
         return new LifecycleBeanPostProcessor();
@@ -58,6 +55,7 @@ public class ShiroConfig {
      3、部分过滤器可指定参数，如perms，roles
      *
      */
+
     @Bean
     public ShiroFilterFactoryBean shirFilter(SecurityManager securityManager){
         ShiroFilterFactoryBean shiroFilterFactoryBean  = new ShiroFilterFactoryBean();
@@ -91,6 +89,7 @@ public class ShiroConfig {
         shiroFilterFactoryBean.setFilterChainDefinitionMap(filterChainDefinitionMap);
         return shiroFilterFactoryBean;
     }
+
     @Bean
     public SecurityManager securityManager(){
         DefaultWebSecurityManager securityManager =  new DefaultWebSecurityManager();
@@ -104,10 +103,18 @@ public class ShiroConfig {
         securityManager.setSessionManager(sessionManager());
         return securityManager;
     }
+
+    @Bean
+    public DBRealm getDBRealm(){
+        DBRealm myShiroRealm = new DBRealm();
+//        将md5加密判别扔给了shiro,此处要告诉shiro用那种加密工具
+        myShiroRealm.setCredentialsMatcher(hashedCredentialsMatcher());
+        return myShiroRealm;
+    }
     /**
      * 生成一个ShiroRedisCacheManager 这没啥好说的
      **/
-    private ShiroRedisCacheManager cacheManager(RedisTemplate template){
+    private ShiroRedisCacheManager cacheManager(RedisTemplate redisTemplate){
         return new ShiroRedisCacheManager(redisTemplate);
     }
     /**
@@ -127,12 +134,24 @@ public class ShiroConfig {
         return sessionManager;
     }
 
+    /**
+     * shiro验证密码调用的加密器
+     * （由于密码校验交给Shiro的SimpleAuthenticationInfo进行处理了
+     *  所以还需要修改下doGetAuthenticationInfo中的代码;
+     * ）
+     * @return
+     */
     @Bean
-    public DBRealm getDBRealm(){
-        DBRealm myShiroRealm = new DBRealm();
-        return myShiroRealm;
+    public HashedCredentialsMatcher hashedCredentialsMatcher(){
+        HashedCredentialsMatcher hashedCredentialsMatcher = new HashedCredentialsMatcher();
+
+        hashedCredentialsMatcher.setHashAlgorithmName("md5");//散列算法:这里使用MD5算法;
+        hashedCredentialsMatcher.setHashIterations(3);//散列的次数;
+
+        return hashedCredentialsMatcher;
     }
 //   shiro和thymeleaf整合需要返回此对象
+
     @Bean
     public ShiroDialect getShiroDialect(){
         return new ShiroDialect();
