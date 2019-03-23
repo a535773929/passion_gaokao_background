@@ -75,17 +75,18 @@ public class WebController {
     }
 //    注册账号
     @RequestMapping("/toregister")
-    public String register(Model m, @Param("username") String name, @Param("password") String password) {
+    public String register(Model m,String username,String password) {
 //        判断用户是否已注册
-        if (registerService.hasUser(name)){
+        if (registerService.hasUser(username)){
             m.addAttribute("error", "用户名已存在");
             return "register";
         }
         try {
-            registerService.register(name,password);
+            registerService.register(username,password);
             return "login";
         }catch (Exception e){
             m.addAttribute("error", "注册失败，请重试或联系管理员");
+            e.printStackTrace();
             return "register";
         }
     }

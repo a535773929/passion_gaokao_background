@@ -44,7 +44,7 @@ public class DemoApplicationTests {
     }
     @Test
     public void getByName2() {
-        String name = usermapper.getbyName("li4").getName();
+        String name = usermapper.getbyName("li4").getPassword();
         System.out.println(name);
     }
     @Test
