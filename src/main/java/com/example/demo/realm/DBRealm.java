@@ -36,6 +36,7 @@ public class DBRealm extends AuthorizingRealm {
         String currentUsername = subject.getPrincipal().toString();
 //        读取当前用户权限并添加到Info
         List<String>perms = userMapper.getPerms(currentUsername);
+        System.out.println(perms);
         info.addStringPermissions(perms);
         return info;
     }

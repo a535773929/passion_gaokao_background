@@ -79,8 +79,8 @@ public class ShiroConfig {
         filterChainDefinitionMap.put("/unAuth", "anon");
         filterChainDefinitionMap.put("/test", "anon");
         filterChainDefinitionMap.put("/Captcha.jpg","anon");
-        filterChainDefinitionMap.put("/adduser", "perms[add]");
-        filterChainDefinitionMap.put("/updateuser", "perms[update]");
+//        filterChainDefinitionMap.put("/adduser", "perms[add]");
+//        filterChainDefinitionMap.put("/updateuser", "perms[update]");
 //        退出登陆操作！！！doLogout可以不再controller中出现，shiro拦截它后直接执行登陆退出操作（也可以自己实现subject.logout()---适用于退出登陆前还有其他自定义操作）
         filterChainDefinitionMap.put("/doLogout", "logout");
 //        不能只拦截部分资源，而是把所有拦截下来统一管理。

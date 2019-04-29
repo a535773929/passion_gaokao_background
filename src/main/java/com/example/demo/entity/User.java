@@ -9,7 +9,7 @@ import java.io.Serializable;
  * @Description: ${description}
  * @Version: 1.0
  */
-public class User implements Serializable {
+public class  User implements Serializable {
 
     public Integer getId() {
         return id;
