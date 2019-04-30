@@ -64,11 +64,11 @@ public class ShiroConfig {
         // 如果不设置默认会自动寻找Web工程根目录下的"/login.jsp"页面，即登陆主页面。此处的链接一样要经过controller！！！！所以不能直接写页面地址
        //如果点击了需要登录才能访问的页面，就会自动跳到这里来
         shiroFilterFactoryBean.setLoginUrl("/login");
-//         登录成功后要跳转的链接(此配置仅仅作为附加配置，session中无用户访问记录时才会往此地址跳。且需要自己配置，不采用此法！）
+//      登录成功后要跳转的链接(此配置仅仅作为附加配置，session中无用户访问记录时才会往此地址跳。且需要自己配置，不采用此法！）
         shiroFilterFactoryBean.setSuccessUrl("/operate");
         //未授权界面;
-        shiroFilterFactoryBean.setUnauthorizedUrl("/unAuth");
-//        拦截器uj
+//        shiroFilterFactoryBean.setUnauthorizedUrl("/unAuth");
+//        拦截器
         Map<String,String> filterChainDefinitionMap = new LinkedHashMap<String,String>();
 
         //配置映射关系-----------拦截的是controller中的路径！！！不是静态文件的位置！！！！！

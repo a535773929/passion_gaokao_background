@@ -32,12 +32,12 @@ public class DBRealm extends AuthorizingRealm {
         //    认证逻辑
         SimpleAuthorizationInfo info = new SimpleAuthorizationInfo();
 //        拿到当前登陆用户
-        Subject subject = SecurityUtils.getSubject();
-        String currentUsername = subject.getPrincipal().toString();
+//        Subject subject = SecurityUtils.getSubject();
+//        String currentUsername = subject.getPrincipal().toString();
 //        读取当前用户权限并添加到Info
-        List<String>perms = userMapper.getPerms(currentUsername);
-        System.out.println(perms);
-        info.addStringPermissions(perms);
+//        List<String>perms = userMapper.getPerms(currentUsername);
+//        System.out.println(perms);
+//        info.addStringPermissions(perms);
         return info;
     }
 

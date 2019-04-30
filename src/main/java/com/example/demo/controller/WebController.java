@@ -54,50 +54,20 @@ public class WebController {
             subject.login(token);
             Session session = subject.getSession();
             session.setAttribute("subject", subject);
-            return "redirect:operate";
+            return "redirect:index";
 
         } catch (AuthenticationException e) {
             m.addAttribute("error", "登录失败");
             return "login";
         }
     }
-    //    登录界面
-    @RequestMapping("/unAuth")
-    public String unanthorized() {
-        return "unAuth";
-    }
-//    注册页面
-    @RequestMapping("/register")
-    public String registerPage(Model m) {
-        return "register";
-    }
-//    注册账号
-    @RequestMapping("/toregister")
-    public String register(Model m,String username,String password) {
-//        判断用户是否已注册
-        if (registerService.hasUser(username)){
-            m.addAttribute("error", "用户名已存在");
-            return "register";
-        }
-        try {
-            registerService.register(username,password);
-            return "login";
-        }catch (Exception e){
-            m.addAttribute("error", "注册失败，请重试或联系管理员");
-            e.printStackTrace();
-            return "register";
-        }
-    }
+
     //    操作列表
-    @RequestMapping("/operate")
+    @RequestMapping("/index")
     public String operate() {
-        return "operate/operationList";
+        return "operate/index";
     }
-//    增
-    @RequestMapping("/adduser")
-    public String add() {
-        return "operate/addUser";
-    }
+
 //    改
     @RequestMapping("/updateuser")
     public String update() {
