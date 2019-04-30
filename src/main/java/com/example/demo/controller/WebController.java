@@ -29,17 +29,17 @@ import java.io.IOException;
  */
 @Controller
 public class WebController {
-//    service只能Autowired，不能Import！！！！！！！！！！！！！！！！
+    //    service只能Autowired，不能Import！！！！！！！！！！！！！！！！
     @Autowired
     RegisterService registerService;
-//    Session中图片验证码值的键名
+    //    Session中图片验证码值的键名
     public static final String KEY_CAPTCHA = "KEY_CAPTCHA";
-//    登录界面
+    //    登录界面
     @RequestMapping("/login")
     public String index() {
         return "login";
     }
-//    登录请求
+    //    登录请求
     @RequestMapping("/tologin")
     public String tologin(String username,String password,String captcha,boolean rememberMe,Model m) {
 //        先判断验证码是否正确
@@ -65,37 +65,32 @@ public class WebController {
     //    操作列表
     @RequestMapping("/index")
     public String operate() {
-        return "operate/index";
+        return "/operate/index";
     }
 
-//    改
-    @RequestMapping("/updateuser")
-    public String update() {
-        return "operate/updateUser";
-    }
-//    获取验证码图片
-@RequestMapping("/Captcha.jpg")
-public void getCaptcha(HttpServletRequest request, HttpServletResponse response)throws ServletException, IOException {
-    // 设置相应类型,告诉浏览器输出的内容为图片
-    response.setContentType("image/jpeg");
-    // 不缓存此内容
-    response.setHeader("Pragma", "No-cache");
-    response.setHeader("Cache-Control", "no-cache");
-    response.setDateHeader("Expire", 0);
-    try {
+    //    获取验证码图片
+    @RequestMapping("/Captcha.jpg")
+    public void getCaptcha(HttpServletRequest request, HttpServletResponse response)throws ServletException, IOException {
+        // 设置相应类型,告诉浏览器输出的内容为图片
+        response.setContentType("image/jpeg");
+        // 不缓存此内容
+        response.setHeader("Pragma", "No-cache");
+        response.setHeader("Cache-Control", "no-cache");
+        response.setDateHeader("Expire", 0);
+        try {
 
-        Session session = SecurityUtils.getSubject().getSession();
+            Session session = SecurityUtils.getSubject().getSession();
 
-        CaptchaUtil tool = new CaptchaUtil();
-        StringBuffer code = new StringBuffer();
-        BufferedImage image = tool.genRandomCodeImage(code);
-        session.removeAttribute(KEY_CAPTCHA);
-        session.setAttribute(KEY_CAPTCHA, code.toString());
+            CaptchaUtil tool = new CaptchaUtil();
+            StringBuffer code = new StringBuffer();
+            BufferedImage image = tool.genRandomCodeImage(code);
+            session.removeAttribute(KEY_CAPTCHA);
+            session.setAttribute(KEY_CAPTCHA, code.toString());
 
-        // 将内存中的图片通过流动形式输出到客户端
-        ImageIO.write(image, "JPEG", response.getOutputStream());
+            // 将内存中的图片通过流动形式输出到客户端
+            ImageIO.write(image, "JPEG", response.getOutputStream());
 
-    } catch (Exception e) {
-        e.printStackTrace();}
+        } catch (Exception e) {
+            e.printStackTrace();}
     }
 }
