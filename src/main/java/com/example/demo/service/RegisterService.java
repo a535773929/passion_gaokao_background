@@ -20,16 +20,14 @@ public class RegisterService {
     @Autowired
     private UserMapper userMapper;
 //    判断用户是否存在
-    public boolean hasUser(String name){
-
+    public User getUser(String name){
         try {
-        User user = userMapper.getbyName(name);
-        if (user!=null){
-            return true;
+            User user = userMapper.getbyName(name);
+            return user;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
         }
-        }catch (Exception e){
-            return false;
-        }return false;
     }
 //    注册新用户。若写入失败，则抛出RuntimeException异常。系统捕获到之后会进行回滚！但是不能catch到此异常后自己处理！！！
     @Transactional

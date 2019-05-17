@@ -2,6 +2,7 @@ package com.example.demo.realm;
 
 import com.example.demo.mapper.UserMapper;
 import com.example.demo.entity.User;
+import com.example.demo.service.RegisterService;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.*;
 import org.apache.shiro.authz.AuthorizationInfo;
@@ -25,19 +26,12 @@ import java.util.List;
 public class DBRealm extends AuthorizingRealm {
 //    usermapper注入错误是因为没有标注为@Component
     @Autowired
-    private UserMapper userMapper;
+    private RegisterService registerService;
 //    授权逻辑
     @Override
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principalCollection) {
         //    认证逻辑
         SimpleAuthorizationInfo info = new SimpleAuthorizationInfo();
-//        拿到当前登陆用户
-//        Subject subject = SecurityUtils.getSubject();
-//        String currentUsername = subject.getPrincipal().toString();
-//        读取当前用户权限并添加到Info
-//        List<String>perms = userMapper.getPerms(currentUsername);
-//        System.out.println(perms);
-//        info.addStringPermissions(perms);
         return info;
     }
 
@@ -47,7 +41,7 @@ public class DBRealm extends AuthorizingRealm {
         UsernamePasswordToken t = (UsernamePasswordToken) authenticationToken;
         String password =new String(t.getPassword());
         String userName = authenticationToken.getPrincipal().toString();
-        User theUser = userMapper.getbyName(userName);
+        User theUser = registerService.getUser(userName);
 //        从数据库拿出的密码（已加密）
         String passwordInDB = theUser.getPassword();
         String salt = theUser.getSalt();
