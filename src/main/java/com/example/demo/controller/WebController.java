@@ -38,15 +38,15 @@ public class WebController {
 
     //    登录请求
     @RequestMapping("/tologin")
-    public JSONObject tologin(String username,String password,String captcha) {
+    public JSONObject tologin(String username,String password) {
         JSONObject result = JSONUtil.createObj();
 //        先判断验证码是否正确
-        String sessionCaptcha = (String) SecurityUtils.getSubject().getSession().getAttribute(KEY_CAPTCHA);
-        if (null == captcha || !captcha.equalsIgnoreCase(sessionCaptcha)) {
-            result.put("msg","验证码错误");
-            result.put("status",401);
-            return result;
-        }
+//        String sessionCaptcha = (String) SecurityUtils.getSubject().getSession().getAttribute(KEY_CAPTCHA);
+//        if (null == captcha || !captcha.equalsIgnoreCase(sessionCaptcha)) {
+//            result.put("msg","验证码错误");
+//            result.put("status",401);
+//            return result;
+//        }
         Subject subject = SecurityUtils.getSubject();
         UsernamePasswordToken token = new UsernamePasswordToken(username, password);
         try {
@@ -71,30 +71,30 @@ public class WebController {
     }
 
     //    获取验证码图片
-    @RequestMapping("/Captcha.jpg")
-    public void getCaptcha(HttpServletRequest request, HttpServletResponse response)throws ServletException, IOException {
-        // 设置相应类型,告诉浏览器输出的内容为图片
-        response.setContentType("image/jpeg");
-        // 不缓存此内容
-        response.setHeader("Pragma", "No-cache");
-        response.setHeader("Cache-Control", "no-cache");
-        response.setDateHeader("Expire", 0);
-        try {
-
-            Session session = SecurityUtils.getSubject().getSession();
-
-            CaptchaUtil tool = new CaptchaUtil();
-            StringBuffer code = new StringBuffer();
-            BufferedImage image = tool.genRandomCodeImage(code);
-            session.removeAttribute(KEY_CAPTCHA);
-            session.setAttribute(KEY_CAPTCHA, code.toString());
-
-            // 将内存中的图片通过流动形式输出到客户端
-            ImageIO.write(image, "JPEG", response.getOutputStream());
-
-        } catch (Exception e) {
-            e.printStackTrace();}
-    }
+//    @RequestMapping("/Captcha.jpg")
+//    public void getCaptcha(HttpServletRequest request, HttpServletResponse response)throws ServletException, IOException {
+//        // 设置相应类型,告诉浏览器输出的内容为图片
+//        response.setContentType("image/jpeg");
+//        // 不缓存此内容
+//        response.setHeader("Pragma", "No-cache");
+//        response.setHeader("Cache-Control", "no-cache");
+//        response.setDateHeader("Expire", 0);
+//        try {
+//
+//            Session session = SecurityUtils.getSubject().getSession();
+//
+//            CaptchaUtil tool = new CaptchaUtil();
+//            StringBuffer code = new StringBuffer();
+//            BufferedImage image = tool.genRandomCodeImage(code);
+//            session.removeAttribute(KEY_CAPTCHA);
+//            session.setAttribute(KEY_CAPTCHA, code.toString());
+//
+//            // 将内存中的图片通过流动形式输出到客户端
+//            ImageIO.write(image, "JPEG", response.getOutputStream());
+//
+//        } catch (Exception e) {
+//            e.printStackTrace();}
+//    }
     @RequestMapping("/logoutSuccess")
     public JSONObject logout(){
         JSONObject result = JSONUtil.createObj();

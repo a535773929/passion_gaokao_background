@@ -5,6 +5,7 @@ import cn.hutool.json.JSONUtil;
 import com.example.demo.entity.Appointment;
 import com.example.demo.entity.FinalAppointment;
 import com.example.demo.mapper.AppointmentMapper;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
@@ -42,6 +43,6 @@ public class AppointmentListService {
     }
 
     @Transactional
-    public int confirm(int id,int confirmType) {return appointmentMapper.confirm(id,confirmType);}
+    public int confirm(int id,int status) {return appointmentMapper.confirm(id,status);}
 }
 

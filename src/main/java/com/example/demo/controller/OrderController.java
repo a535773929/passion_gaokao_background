@@ -3,8 +3,10 @@ package com.example.demo.controller;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
+import com.example.demo.entity.ResponseData;
 import com.example.demo.exception.WrongTypeException;
 import com.example.demo.service.AppointmentListService;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,32 +16,30 @@ public class OrderController {
     AppointmentListService appointmentListService;
 
     @GetMapping("/appointmentList")
-    public JSONArray listAppointment(){
-            JSONArray forms = appointmentListService.findAll();
-            return forms;
+    public ResponseData listAppointment(){
+        JSONArray forms = appointmentListService.findAll();
+        ResponseData rp = new ResponseData(forms,"success",200);
+        return rp;
     }
 
     @PutMapping("/order/{appointment_id}")
-    public JSONObject confirm(@PathVariable("appointment_id")  int id,int confirmType){
-        JSONObject result = JSONUtil.createObj();
+    public ResponseData confirm(@PathVariable("appointment_id")  int id,int status){
+        System.out.println(id);
         try {
-            if(!(confirmType==1||confirmType==2)){
+            if(!(status==2||status==3||status==4)){
                 throw new WrongTypeException();
             }
-            appointmentListService.confirm(id,confirmType);
-            result.put("msg","成功");
-            result.put("status",200);
-            return result;
+            appointmentListService.confirm(id,status);
+            ResponseData rp = new ResponseData("success",200);
+            return rp;
         } catch (WrongTypeException e) {
             e.printStackTrace();
-            result.put("msg","修改状态字错误");
-            result.put("status",416);
-            return result;
+            ResponseData rp = new ResponseData("状态字不合法",416);
+            return rp;
         }catch (Exception e) {
             e.printStackTrace();
-            result.put("msg","未知错误");
-            result.put("status",400);
-            return result;
+            ResponseData rp = new ResponseData("UnknownException",400);
+            return rp;
         }
     }
 
