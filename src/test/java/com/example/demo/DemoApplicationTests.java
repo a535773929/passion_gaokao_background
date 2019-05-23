@@ -13,6 +13,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.StringTokenizer;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -58,7 +59,13 @@ public class DemoApplicationTests {
     @Test
     public void getAll() {
 
-        System.out.println(as.findAll());
-    }
-}
+//        System.out.println(as.findAll());
+//        System.out.println("1" + new Integer(2) + 3.0);
+        StringTokenizer st = new StringTokenizer("Welcome to China", " ");
+        while (st.hasMoreTokens())  {
+            System.out.println(123);
+            System.out.println(st.nextToken());
+
+        }
+}}
 

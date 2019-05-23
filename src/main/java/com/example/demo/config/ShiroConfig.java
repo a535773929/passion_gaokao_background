@@ -63,9 +63,12 @@ public class ShiroConfig {
         shiroFilterFactoryBean.setSecurityManager(securityManager);
 
         Map<String, Filter> filters = new LinkedHashMap<String, Filter>();
+        filters.put("custom", new ShiroUserFilter());
         LogoutFilter logoutFilter = new LogoutFilter();
         logoutFilter.setRedirectUrl("/logoutSuccess");
         filters.put("logout", logoutFilter);
+//        filters.put("authc", new MyAuthenticationFilter());
+
         shiroFilterFactoryBean.setFilters(filters);
 
 //        拦截器
@@ -76,10 +79,12 @@ public class ShiroConfig {
         filterChainDefinitionMap.put("/Captcha.jpg","anon");
 //        退出登陆操作！！！doLogout可以不再controller中出现，shiro拦截它后直接执行登陆退出操作（也可以自己实现subject.logout()---适用于退出登陆前还有其他自定义操作）
         filterChainDefinitionMap.put("/logout", "logout");
-        //配置shiro默认登录界面地址，前后端分离中登录界面跳转应由前端路由控制，后台仅返回json数据
-        shiroFilterFactoryBean.setLoginUrl("/unAuth");
+        //未登陆用户访问需登陆页面重定向的地址
+//        shiroFilterFactoryBean.setLoginUrl("/unLogin");
+//        shiroFilterFactoryBean.setUnauthorizedUrl("/unAuth");
 //        不能只拦截部分资源，而是把所有拦截下来统一管理。
-        filterChainDefinitionMap.put("/**", "user");
+        filterChainDefinitionMap.put("/**", "custom");
+//        filterChainDefinitionMap.put("/**", "user");
 
         shiroFilterFactoryBean.setFilterChainDefinitionMap(filterChainDefinitionMap);
         return shiroFilterFactoryBean;

@@ -20,6 +20,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.io.Serializable;
 
 /**
  * @Package: com.example.demo.controller
@@ -38,15 +39,16 @@ public class WebController {
 
     //    登录请求
     @RequestMapping("/tologin")
-    public JSONObject tologin(String username,String password) {
+    public JSONObject tologin(String username,String password,String captcha) {
         JSONObject result = JSONUtil.createObj();
 //        先判断验证码是否正确
-//        String sessionCaptcha = (String) SecurityUtils.getSubject().getSession().getAttribute(KEY_CAPTCHA);
-//        if (null == captcha || !captcha.equalsIgnoreCase(sessionCaptcha)) {
-//            result.put("msg","验证码错误");
-//            result.put("status",401);
-//            return result;
-//        }
+        String sessionCaptcha = (String) SecurityUtils.getSubject().getSession().getAttribute(KEY_CAPTCHA);
+        System.out.println("当前验证码："+sessionCaptcha);
+        if (null == captcha || !captcha.equalsIgnoreCase(sessionCaptcha)) {
+            result.put("msg","验证码错误");
+            result.put("status",401);
+            return result;
+        }
         Subject subject = SecurityUtils.getSubject();
         UsernamePasswordToken token = new UsernamePasswordToken(username, password);
         try {
@@ -71,30 +73,43 @@ public class WebController {
     }
 
     //    获取验证码图片
-//    @RequestMapping("/Captcha.jpg")
-//    public void getCaptcha(HttpServletRequest request, HttpServletResponse response)throws ServletException, IOException {
-//        // 设置相应类型,告诉浏览器输出的内容为图片
-//        response.setContentType("image/jpeg");
-//        // 不缓存此内容
-//        response.setHeader("Pragma", "No-cache");
-//        response.setHeader("Cache-Control", "no-cache");
-//        response.setDateHeader("Expire", 0);
-//        try {
-//
-//            Session session = SecurityUtils.getSubject().getSession();
-//
-//            CaptchaUtil tool = new CaptchaUtil();
-//            StringBuffer code = new StringBuffer();
-//            BufferedImage image = tool.genRandomCodeImage(code);
-//            session.removeAttribute(KEY_CAPTCHA);
-//            session.setAttribute(KEY_CAPTCHA, code.toString());
-//
-//            // 将内存中的图片通过流动形式输出到客户端
-//            ImageIO.write(image, "JPEG", response.getOutputStream());
-//
-//        } catch (Exception e) {
-//            e.printStackTrace();}
-//    }
+    @RequestMapping("/Captcha.jpg")
+    public void getCaptcha(HttpServletRequest request, HttpServletResponse response){
+        // 设置相应类型,告诉浏览器输出的内容为图片
+        response.setContentType("image/jpeg");
+        // 不缓存此内容
+        response.setHeader("Pragma", "No-cache");
+        response.setHeader("Cache-Control", "no-cache");
+        response.setDateHeader("Expire", 0);
+        response.setHeader("Access-Control-Expose-Headers", "token");
+        try {
+
+            Session session = SecurityUtils.getSubject().getSession();
+            response.setHeader("token", session.getId().toString());
+
+            CaptchaUtil tool = new CaptchaUtil();
+            StringBuffer code = new StringBuffer();
+            BufferedImage image = tool.genRandomCodeImage(code);
+            session.removeAttribute(KEY_CAPTCHA);
+            session.setAttribute(KEY_CAPTCHA, code.toString());
+
+            // 将内存中的图片通过流动形式输出到客户端
+            ImageIO.write(image, "JPEG", response.getOutputStream());
+//            JSONObject result = JSONUtil.createObj();
+//            result.put("Token",SecurityUtils.getSubject().getSession().getId());
+//            result.put("msg","token令牌");
+//            result.put("status",200);
+//            System.out.println(result);
+//            return result;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            JSONObject result = JSONUtil.createObj();
+            result.put("msg","获取验证码失败");
+            result.put("status",400);
+//            return result;
+        }
+    }
     @RequestMapping("/logoutSuccess")
     public JSONObject logout(){
         JSONObject result = JSONUtil.createObj();
@@ -108,5 +123,22 @@ public class WebController {
         result.put("msg","未获得授权");
         result.put("status",401);
         return result;
+    }
+    @RequestMapping("/unLogin")
+    public JSONObject unLogin(){
+        JSONObject result = JSONUtil.createObj();
+        result.put("msg","未登陆");
+        result.put("status",401);
+        return result;
+    }
+
+    @RequestMapping("/token")
+    public JSONObject token(){
+            JSONObject result = JSONUtil.createObj();
+            result.put("Token",SecurityUtils.getSubject().getSession().getId());
+            result.put("msg","token令牌");
+            result.put("status",200);
+            System.out.println(result);
+            return result;
     }
 }
