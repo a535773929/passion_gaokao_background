@@ -1,9 +1,12 @@
 package com.example.demo.service;
 
 import cn.hutool.json.JSONArray;
+import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.example.demo.entity.Appointment;
+import com.example.demo.entity.Expert;
 import com.example.demo.entity.FinalAppointment;
+import com.example.demo.entity.Student;
 import com.example.demo.mapper.AppointmentMapper;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +16,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import javax.annotation.Resource;
 import java.text.SimpleDateFormat;
@@ -43,6 +47,24 @@ public class AppointmentListService {
     }
 
     @Transactional
-    public int confirm(int id,int status) {return appointmentMapper.confirm(id,status);}
+    public Boolean confirm(int id,int status) {
+        try {
+            appointmentMapper.confirm(id,status);
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return false;
+        }
+    }
+
+    public Student findInfo(int id){return appointmentMapper.findStudentInfo(id);}
+
+    public JSONArray findByGroup(int id){
+
+        List<Expert> experts = appointmentMapper.findByGroup(id);
+        JSONArray jsonList = JSONUtil.parseArray(experts);
+        return jsonList;
+    }
 }
 

@@ -67,5 +67,12 @@ public class DemoApplicationTests {
             System.out.println(st.nextToken());
 
         }
-}}
+    }
+    @Test
+    public void getStudentInfo() {
+        System.out.println(as.findInfo(1).toString());
+
+    }
+
+}
 
