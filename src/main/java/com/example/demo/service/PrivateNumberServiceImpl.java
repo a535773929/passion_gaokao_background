@@ -5,10 +5,11 @@ import com.alibaba.fastjson.JSONObject;
 import com.example.demo.Bean.HiddenNumberBean;
 import com.example.demo.util.HttpUtil;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.springframework.stereotype.Service;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -16,7 +17,8 @@ import java.util.Map;
 
 @Service("privateNumberService")
 public  class PrivateNumberServiceImpl implements PrivateNumberService {
-    private Logger logger = Logger.getLogger(PrivateNumberServiceImpl.class);
+    String event=null;
+    private Logger logger = LogManager.getLogger(PrivateNumberServiceImpl.class);
     private String appKey="ui9B5arvF2vxzvNbr3BGSA6fWDz0"; // APP_Key;
     private String appSecret="Z3MZkzEo6HEPxq40wl4jHl5b4PbE"; // APP_Secret;
     private String ompDomainName="https://rtcapi.cn-north-1.myhuaweicloud.com:12543"; // APP接入地址;
@@ -27,7 +29,6 @@ public  class PrivateNumberServiceImpl implements PrivateNumberService {
     @Override
    public String numberMalloc(String callerNum, String calleeNum)
 {
-    PropertyConfigurator.configure("C:\\Users\\gjx\\Desktop\\gaokao\\neilinker-mobile\\neilinker-mobile\\neilinker-mobile-svc\\neilinker-mobile-impl\\log4j.properties");
 
     try{
     String s="+8617138071425";
@@ -39,7 +40,6 @@ public  class PrivateNumberServiceImpl implements PrivateNumberService {
 
 }
    public HiddenNumberBean querySelect(String subscriptionId) {
-       PropertyConfigurator.configure("C:\\Users\\gjx\\Desktop\\gaokao\\neilinker-mobile\\neilinker-mobile\\neilinker-mobile-svc\\neilinker-mobile-impl\\log4j.properties");
        HiddenNumberBean bean = new HiddenNumberBean();
        try {
            if (StringUtils.isBlank(subscriptionId)) {
@@ -82,7 +82,6 @@ public  class PrivateNumberServiceImpl implements PrivateNumberService {
    }
    public HiddenNumberBean querynNumberSelect(String a, String b)
    {
-       PropertyConfigurator.configure("C:\\Users\\gjx\\Desktop\\gaokao\\neilinker-mobile\\neilinker-mobile\\neilinker-mobile-svc\\neilinker-mobile-impl\\log4j.properties");
        HiddenNumberBean beanAB = new HiddenNumberBean();
        try {
            if (StringUtils.isBlank(a)) {
@@ -127,7 +126,7 @@ public  class PrivateNumberServiceImpl implements PrivateNumberService {
    }
    public List<HiddenNumberBean> queryByX(String relationNum)
    {
-       PropertyConfigurator.configure("C:\\Users\\gjx\\Desktop\\gaokao\\neilinker-mobile\\neilinker-mobile\\neilinker-mobile-svc\\neilinker-mobile-impl\\log4j.properties");
+
        List<HiddenNumberBean> bean = new ArrayList<HiddenNumberBean>();
        try {
            if (StringUtils.isBlank(relationNum)) {
@@ -175,10 +174,19 @@ public  class PrivateNumberServiceImpl implements PrivateNumberService {
        }
 
    }
-   public HiddenNumberBean  PrivateNumberEvent(JSONObject numberEvent){
+   public String  PrivateNumberEvent(JSONObject numberEvent){
         HostingVoiceEventDemoImpl event= new HostingVoiceEventDemoImpl();
-        HiddenNumberBean bean=event.onCallEvent(numberEvent);
-        return bean;
+        try{
+        String bean=event.onCallEvent(numberEvent,this.event);
+        this.event=bean;
+            return bean;}
+        catch (Exception e){
+
+            logger.error(e);
+            return null;
+       }
+
+
 
    }
 }

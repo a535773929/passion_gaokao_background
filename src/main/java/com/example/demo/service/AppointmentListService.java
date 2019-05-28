@@ -66,5 +66,18 @@ public class AppointmentListService {
         JSONArray jsonList = JSONUtil.parseArray(experts);
         return jsonList;
     }
+
+    @Transactional
+    public Boolean setExpert(int appointment_id,int expert_id) {
+        try {
+            appointmentMapper.setExpert(appointment_id,expert_id);
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return false;
+        }
+    }
+    public String findExpert(int id){return appointmentMapper.findExpert(id);}
 }
 

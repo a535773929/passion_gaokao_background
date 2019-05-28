@@ -62,18 +62,25 @@ public class OrderController {
         ResponseData rp = new ResponseData(forms,"success",200);
         return rp;
     }
-//    @RequestMapping("/order/{appointment_id}")
-//    public ResponseData confirmExpert(@PathVariable("appointment_id")  int appointment_id,@RequestParam("expert_id") int expert_id){
-////        System.out.println(id);
-//        try {
-////            appointmentListService.confirm(id,1);
-//            ResponseData rp = new ResponseData("success",200);
-//            return rp;
-//        }catch (Exception e) {
-//            e.printStackTrace();
-//            ResponseData rp = new ResponseData("failed",400);
-//            return rp;
-//        }
-//    }
+    @RequestMapping("/setExpert/{appointment_id}")
+    public ResponseData confirmExpert(@PathVariable("appointment_id")  int appointment_id,@RequestParam("expert_id") int expert_id){
+//        System.out.println(id);
+           Boolean a = appointmentListService.setExpert(appointment_id,expert_id);
+        if (a){
+            ResponseData rp = new ResponseData("success",200);
+            return rp;
+        }else {
+            ResponseData rp = new ResponseData("failed",400);
+            return rp;
+        }
+
+    }
+
+    @RequestMapping("/getExpert/{expert_id}")
+    public String getExpert(@PathVariable("expert_id")  int expert_id){
+        String phone = appointmentListService.findExpert(expert_id);
+        return phone;
+
+    }
 
 }

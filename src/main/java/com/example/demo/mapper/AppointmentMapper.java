@@ -1,6 +1,7 @@
 package com.example.demo.mapper;
 
 import com.example.demo.entity.Appointment;
+import com.example.demo.entity.BindNumber;
 import com.example.demo.entity.Expert;
 import com.example.demo.entity.Student;
 import org.apache.ibatis.annotations.Mapper;
@@ -24,4 +25,13 @@ public interface AppointmentMapper {
 
     @Select("select expert_id,expert_name,phone from gaokao_expert where group_id=#{id}")
     List<Expert> findByGroup(@Param("id") int id);
+
+    @Update("update gaokao_appointment set expert_id=#{expert_id} where appointment_id=#{appointment_id}")
+    int setExpert(@Param("appointment_id") int appointment_id,@Param("expert_id") int expert_id);
+
+    @Select("select phone from gaokao_expert where expert_id=#{id}")
+    String findExpert(@Param("id") int id);
+
+    @Select("select phone from gaokao_appointment where appointment_id=#{id}")
+    BindNumber getPhoneNumber(int appointment_id);
 }

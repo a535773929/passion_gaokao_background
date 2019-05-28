@@ -2,28 +2,34 @@ package com.example.demo.service;
 
 import com.alibaba.fastjson.JSONObject;
 import com.example.demo.Bean.HiddenNumberBean;
-import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
+import javax.validation.constraints.Null;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 public class HostingVoiceEventDemoImpl {
 
-    private Logger logger = Logger.getLogger(HostingVoiceEventDemoImpl.class);
+    private Logger logger = LogManager.getLogger(HostingVoiceEventDemoImpl.class);
         /**
          * 呼叫事件 for AXB
          *
          * @param jsonBody
          * @breif 详细内容以接口文档为准
          */
-        public HiddenNumberBean onCallEvent(JSONObject jsonBody) {
+        String time= null;
+        public String onCallEvent(JSONObject jsonBody,String data_time) throws ParseException{
+            this.time=data_time;
             // 封装JOSN请求
-            PropertyConfigurator.configure("C:\\Users\\gjx\\Desktop\\gaokao\\neilinker-mobile\\neilinker-mobile\\neilinker-mobile-svc\\neilinker-mobile-impl\\log4j.properties");
             String eventType = jsonBody.getString("eventType"); // 通知事件类型
 
             if ("fee".equalsIgnoreCase(eventType)) {
                 HiddenNumberBean bean = new HiddenNumberBean();
                 logger.info("EventType error: " + eventType);
                 bean.setEventError("EventType error: " + eventType);
-                return bean;
+                return "结束！";
             }
 
             JSONObject statusInfo = jsonBody.getJSONObject("statusInfo"); // 呼叫状态事件信息
@@ -55,8 +61,8 @@ public class HostingVoiceEventDemoImpl {
                 bean.setPrivacy_platform_time(startTime);
                 bean.setB(called);
                 bean.setEventDesc("callin");
-                logger.info(bean);
-                return bean;
+                logger.info("呼叫时间"+bean.getPrivacy_platform_time());
+                return "结束！";
 
             }
 
@@ -84,8 +90,8 @@ public class HostingVoiceEventDemoImpl {
                 bean.setPrivacy_platform_time(startTime);
                 bean.setB(called);
                 bean.setEventDesc("callout");
-                logger.info(bean);
-                return bean;
+                logger.info("呼出时间"+bean.getPrivacy_platform_time());
+                return "结束！";
             }
             //alerting：振铃事件
             if ("alerting".equalsIgnoreCase(eventType)) {
@@ -111,9 +117,9 @@ public class HostingVoiceEventDemoImpl {
                 bean.setPrivacy_platform_time(startTime);
                 bean.setB(called);
                 bean.setEventDesc("alerting");
-                logger.info(bean);
+                logger.info("振铃时间"+bean.getPrivacy_platform_time());
 
-                return bean;
+                return "结束！";
             }
             //answer：应答事件
             if ("answer".equalsIgnoreCase(eventType)) {
@@ -139,8 +145,9 @@ public class HostingVoiceEventDemoImpl {
                 bean.setPrivacy_platform_time(startTime);
                 bean.setB(called);
                 bean.setEventDesc("answer");
-                logger.info(bean);
-                return bean;
+                logger.info("应答时间"+bean.getPrivacy_platform_time());
+                this.time=bean.getPrivacy_platform_time();
+                return this.time;
             }
             //disconnect：挂机事件
             if ("disconnect".equalsIgnoreCase(eventType)) {
@@ -156,6 +163,7 @@ public class HostingVoiceEventDemoImpl {
                  * 'stateDesc': 通话挂机的原因值的描述
                  * 'subscriptionId': 绑定关系ID
                  */
+
                 HiddenNumberBean bean = new HiddenNumberBean();
                 String sessionId = statusInfo.getString("sessionId");
                 String subscriptionId=statusInfo.getString("subscriptionId");
@@ -169,8 +177,21 @@ public class HostingVoiceEventDemoImpl {
                 bean.setPrivacy_platform_time(startTime);
                 bean.setB(called);
                 bean.setEventDesc(stateDesc);
-                logger.info(bean);
-                return bean;
+                logger.info(bean.getPrivacy_platform_time());
+                System.out.println(this.time);
+                if (this.time!=null && this.time!="结束！"){
+                SimpleDateFormat sdf= new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                Date d1=sdf.parse(this.time);
+                Date d2=sdf.parse(bean.getPrivacy_platform_time());
+                long nd = 1000 * 24 * 60 * 60;
+                long nh = 1000 * 60 * 60;
+                long nm = 1000 * 60;
+                long diff = d2.getTime() - d1.getTime();
+                long day = diff / nd;
+                long hour = diff % nd / nh;
+                long min = diff % nd % nh / nm;
+                logger.info(sessionId+":"+day + "天" + hour + "小时" + min + "分钟");
+                    return "结束！";}else{logger.info("对方已挂断");}
             }
             return null;
         }

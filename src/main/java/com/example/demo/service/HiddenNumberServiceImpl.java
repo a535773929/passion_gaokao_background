@@ -4,7 +4,8 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.example.demo.util.HttpUtil;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.apache.log4j.PropertyConfigurator;
 import org.springframework.stereotype.Service;
 
@@ -15,7 +16,7 @@ import java.util.Map;
 public class HiddenNumberServiceImpl implements HiddenNumberService {
 
         public static String  subscriptionId;
-        private Logger logger = Logger.getLogger(HiddenNumberServiceImpl.class);
+        private Logger logger = LogManager.getLogger(HiddenNumberServiceImpl.class);
 
         private String appKey="ui9B5arvF2vxzvNbr3BGSA6fWDz0"; // APP_Key;
         private String appSecret="Z3MZkzEo6HEPxq40wl4jHl5b4PbE"; // APP_Secret;
@@ -25,7 +26,6 @@ public class HiddenNumberServiceImpl implements HiddenNumberService {
         }
         @Override
         public String axbBindNumber(String relationNum, String callerNum, String calleeNum) {
-            PropertyConfigurator.configure("C:\\Users\\gjx\\Desktop\\gaokao\\neilinker-mobile\\neilinker-mobile\\neilinker-mobile-svc\\neilinker-mobile-impl\\log4j.properties");
             try{
             if (StringUtils.isBlank(relationNum) || StringUtils.isBlank(callerNum) || StringUtils.isBlank(calleeNum)) {
                 logger.error("axbBindNumber set params error");
@@ -70,7 +70,7 @@ public class HiddenNumberServiceImpl implements HiddenNumberService {
         @Override
         public void axbModifyNumber(String subscriptionId, String callerNum, String calleeNum) {
             try{
-            PropertyConfigurator.configure("C:\\Users\\gjx\\Desktop\\gaokao\\neilinker-mobile\\neilinker-mobile\\neilinker-mobile-svc\\neilinker-mobile-impl\\log4j.properties");
+
             if (StringUtils.isBlank(subscriptionId)) {
                 logger.error("axbModifyNumber set params error");
                 return;
@@ -111,7 +111,7 @@ public class HiddenNumberServiceImpl implements HiddenNumberService {
 
         @Override
         public String axbUnbindNumber(String subscriptionId, String relationNum) {
-            PropertyConfigurator.configure("C:\\Users\\gjx\\Desktop\\gaokao\\neilinker-mobile\\neilinker-mobile\\neilinker-mobile-svc\\neilinker-mobile-impl\\log4j.properties");
+
             try{
             if (StringUtils.isBlank(subscriptionId) && StringUtils.isBlank(relationNum)) {
                 logger.error("axbUnbindNumber set params error");
@@ -146,7 +146,7 @@ public class HiddenNumberServiceImpl implements HiddenNumberService {
         @Override
         public String axbQueryBindRelation(String subscriptionId, String relationNum) {
             try{
-            PropertyConfigurator.configure("C:\\Users\\gjx\\Desktop\\gaokao\\neilinker-mobile\\neilinker-mobile\\neilinker-mobile-svc\\neilinker-mobile-impl\\log4j.properties");
+
             if (StringUtils.isBlank(subscriptionId) && StringUtils.isBlank(relationNum)) {
                 logger.error("axbQueryBindRelation set params error");
                 return "axbQueryBindRelation set params error";
@@ -182,7 +182,7 @@ public class HiddenNumberServiceImpl implements HiddenNumberService {
         @Override
         public void axbGetRecordDownloadLink(String recordDomain, String fileName) {
             try{
-            PropertyConfigurator.configure("C:\\Users\\gjx\\Desktop\\gaokao\\neilinker-mobile\\neilinker-mobile\\neilinker-mobile-svc\\neilinker-mobile-impl\\log4j.properties");
+
             if (StringUtils.isBlank(recordDomain) || StringUtils.isBlank(fileName)) {
                 logger.error("axbGetRecordDownloadLink set params error");
                 return;
@@ -208,7 +208,7 @@ public class HiddenNumberServiceImpl implements HiddenNumberService {
         @Override
         public void axbStopCall(String sessionid) {
             try{
-            PropertyConfigurator.configure("C:\\Users\\gjx\\Desktop\\gaokao\\neilinker-mobile\\neilinker-mobile\\neilinker-mobile-svc\\neilinker-mobile-impl\\log4j.properties");
+
             if (StringUtils.isBlank(sessionid)) {
                 logger.error("axbStopCall set params error");
                 return;
