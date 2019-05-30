@@ -27,11 +27,11 @@ public  class PrivateNumberServiceImpl implements PrivateNumberService {
     }
     String id= HiddenNumberServiceImpl.subscriptionId;
     @Override
-   public String numberMalloc(String callerNum, String calleeNum)
+   public String numberMalloc(String callerNum, String calleeNum, String userfulXNumber )
 {
 
     try{
-    String s="+8617138071425";
+    String s=userfulXNumber;
     return s;}
     catch(Exception e){
         logger.error(e);

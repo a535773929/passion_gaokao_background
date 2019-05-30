@@ -4,10 +4,7 @@ import com.example.demo.entity.Appointment;
 import com.example.demo.entity.BindNumber;
 import com.example.demo.entity.Expert;
 import com.example.demo.entity.Student;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Select;
-import org.apache.ibatis.annotations.Update;
+import org.apache.ibatis.annotations.*;
 
 import java.sql.Date;
 import java.util.List;
@@ -32,6 +29,5 @@ public interface AppointmentMapper {
     @Select("select phone from gaokao_expert where expert_id=#{id}")
     String findExpert(@Param("id") int id);
 
-    @Select("select phone from gaokao_appointment where appointment_id=#{id}")
-    BindNumber getPhoneNumber(int appointment_id);
+
 }

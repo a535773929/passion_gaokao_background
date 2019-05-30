@@ -34,6 +34,7 @@ public class AppointmentListService {
         SimpleDateFormat todayFormat=new SimpleDateFormat("yyyy-MM-dd  00:00:00");
         String today = todayFormat.format(now);
         List<Appointment> appointmentsList = appointmentMapper.findAll(today);
+        System.out.println(appointmentsList);
 //        ArrayList<FinalAppointment> finalAppointments = new ArrayList<>();
 //        for(Appointment a:appointmentsList){
 //            FinalAppointment f = new FinalAppointment(a);

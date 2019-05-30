@@ -12,7 +12,7 @@ public interface PrivateNumberService<HiddenNumberBean> {
      * @return 隐私号
      * @throws Exception 分配号码失败，注意有多种可能
      */
-    String numberMalloc(String a, String b) throws Exception;
+    String numberMalloc(String a, String b ,String userfulXNumber) throws Exception;
     /**
      * 释放隐私号
      * @param uuid 隐私号唯一识别码

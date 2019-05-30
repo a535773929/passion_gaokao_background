@@ -14,6 +14,8 @@ import org.springframework.test.context.junit4.SpringRunner;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.StringTokenizer;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -70,8 +72,18 @@ public class DemoApplicationTests {
     }
     @Test
     public void getStudentInfo() {
-        System.out.println(as.findInfo(1).toString());
+//        System.out.println(as.findInfo(1).toString());
+        String s1="";
+        String regex = "\\d{13}";
+        String s = "dgdg6534+12345678911112222dsfger";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher m = pattern.matcher(s);
+        System.out.println(m.find());
+        System.out.println(m.group());
 
+        String s3 ="123456";
+        System.out.println(s3.substring(1,3));
+        System.out.println(s3.substring(3,s3.length()));
     }
 
 }

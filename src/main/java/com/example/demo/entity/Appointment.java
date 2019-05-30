@@ -112,6 +112,14 @@ public class Appointment {
         this.expert_id = expert_id;
     }
 
+    public String getX_number() {
+        return x_number;
+    }
+
+    public void setX_number(String x_number) {
+        this.x_number = x_number;
+    }
+
     private int group_id;
     private int status;
     private String appointment_time;
@@ -123,5 +131,7 @@ public class Appointment {
     private int period;
     private String expert_name;
     private int expert_id;
+    private String x_number;
+
 
 }
