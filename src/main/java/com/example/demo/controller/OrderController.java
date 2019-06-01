@@ -40,33 +40,37 @@ public class OrderController {
     @RequestMapping("/order/{appointment_id}")
     public ResponseData confirm(@PathVariable("appointment_id")  int id,@RequestParam("status") int status){
         System.out.println(id);
-            if(!(status==3||status==4)){
-                ResponseData rp = new ResponseData("状态字不合法",416);
-                return rp;
-            }
+        if(!(status==3||status==4)){
+            ResponseData rp = new ResponseData("状态字不合法",416);
+            return rp;
+        }
 
-            Boolean a = appointmentListService.confirm(id,status);
-            if (a){
+            int times = bindNumberService.getTimes(id);
+        if(times<1){
+            ResponseData rp = new ResponseData("用户无可用预约数",400);
+            return rp;
+        }
 
+        String axbUnbind= null;
+        XNumber xNumber = bindNumberService.findXNumber(id);
+        if (xNumber==null){
+            ResponseData rp = new ResponseData("未能解绑虚拟号",400);
+            return rp;
+        }
 
-                    String axbUnbind= null;
-                    XNumber xNumber = bindNumberService.findXNumber(id);
-                    if (xNumber==null){
-                        ResponseData rp = new ResponseData("订单状态已更新，但未能解绑虚拟号",400);
-                        return rp;
-                    }
+        axbUnbind = axb.axbUnbindNumber(xNumber.getxNumberSubscriptId(), xNumber.getX_number());
 
-                    axbUnbind = axb.axbUnbindNumber(xNumber.getxNumberSubscriptId(), xNumber.getX_number());
-
-                    bindNumberService.updateExpertXNumber(xNumber);
-                    ResponseData rp = new ResponseData(axbUnbind,200);
-                    return rp;
-            }else {
-                ResponseData rp = new ResponseData("未能更新订单状态",400);
-                return rp;
-            }
-
+//                    更新专家可用号码，并重置订单预约信息
+        Boolean a = bindNumberService.subtractTimes(id,times,xNumber,status);
+        if (a) {
+            ResponseData rp = new ResponseData(axbUnbind,200);
+            return rp;
+        }else {
+            ResponseData rp = new ResponseData("更新订单失败",400);
+            return rp;
+        }
     }
+
     @GetMapping("/studentInfo/{student_id}")
     public JSONObject studentInfo(@PathVariable("student_id") int id){
         Student stu = appointmentListService.findInfo(id);
@@ -88,6 +92,14 @@ public class OrderController {
     public JSONObject confirmExpert(@PathVariable("appointment_id")  int appointment_id,@RequestParam("expert_id") int expert_id){
 //        System.out.println(id);
 
+        int times = bindNumberService.getTimes(appointment_id);
+        if(times<1){
+            JSONObject result = JSONUtil.createObj();
+            result.put("msg","用户无可用预约次数");
+            result.put("status",400);
+            return result;
+        }
+
         BindNumber bindNumber = bindNumberService.searchRealNumber(appointment_id,expert_id);
         if (bindNumber.getExpertPhone()==null){
             System.out.println(bindNumber.getExpertPhone());
@@ -105,7 +117,7 @@ public class OrderController {
         String expNumber = bindNumberService.getExpertHideNumber(expert_id);
         if(expNumber==null){
             JSONObject result = JSONUtil.createObj();
-            result.put("msg","绑定专家成功，该专家无可用隐号");
+            result.put("msg","该专家无可用隐号");
             result.put("status",404);
             return result;
         }
@@ -118,9 +130,9 @@ public class OrderController {
 
         String A= null;
         try {
-            String callerNum=bindNumber.getExpertPhone();
+            String callerNum="+86"+bindNumber.getExpertPhone();
 //        String callerNum="17777777777";
-            String calleeNum=bindNumber.getStudentPhone();
+            String calleeNum="+86"+bindNumber.getStudentPhone();
 //        String calleeNum="17777777778";
             System.out.println("expert:"+calleeNum);
             System.out.println("student:"+callerNum);
@@ -173,7 +185,7 @@ public class OrderController {
             JSONObject result = JSONUtil.createObj();
             result.put("msg","该专家无可用虚拟号");
             result.put("error",A);
-            result.put("status",500);
+            result.put("status",400);
             return result;
         }
 
@@ -195,7 +207,7 @@ public class OrderController {
         if (!b){
             JSONObject result = JSONUtil.createObj();
             result.put("x_number",usefulXNumber);
-            result.put("msg","隐私号绑定成功但存储失败,详见Log文件");
+            result.put("msg","数据库存储失败,详见Log文件");
             result.put("status",400);
             return result;
         }

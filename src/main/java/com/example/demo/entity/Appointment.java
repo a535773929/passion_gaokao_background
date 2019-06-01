@@ -120,6 +120,14 @@ public class Appointment {
         this.x_number = x_number;
     }
 
+    public int getTimes() {
+        return times;
+    }
+
+    public void setTimes(int times) {
+        this.times = times;
+    }
+
     private int group_id;
     private int status;
     private String appointment_time;
@@ -132,6 +140,7 @@ public class Appointment {
     private String expert_name;
     private int expert_id;
     private String x_number;
+    private int times;
 
 
 }

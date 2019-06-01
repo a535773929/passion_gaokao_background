@@ -47,17 +47,6 @@ public class AppointmentListService {
         return jsonList;
     }
 
-    @Transactional
-    public Boolean confirm(int id,int status) {
-        try {
-            appointmentMapper.confirm(id,status);
-            return true;
-        } catch (Exception e) {
-            e.printStackTrace();
-            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            return false;
-        }
-    }
 
     public Student findInfo(int id){return appointmentMapper.findStudentInfo(id);}
 
