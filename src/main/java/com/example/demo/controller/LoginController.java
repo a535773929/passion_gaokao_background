@@ -30,7 +30,7 @@ import java.io.Serializable;
  * @Version: 1.0
  */
 @RestController
-public class WebController {
+public class LoginController {
     //    service只能Autowired，不能Import！！！！！！！！！！！！！！！！
     @Autowired
     RegisterService registerService;

@@ -17,8 +17,17 @@ public interface AppointmentMapper {
     @Select("select student_name,gender,phone,address,student_type,total_score from gaokao_student where student_id=#{id}")
     Student findStudentInfo(@Param("id") int id);
 
-    @Select("select expert_id,expert_name,phone from gaokao_expert where group_id=#{id}")
-    List<Expert> findByGroup(@Param("id") int id);
+    @Select("select expert_id from gaokao_expert_group where group_id=#{id}")
+    String findByGroup(@Param("id") int id);
+
+    @Select("<script>"
+            +"select * from gaokao_expert where expert_id in "
+            + "<foreach item='item' index='index' collection='expertsId' open='(' separator=',' close=')'>"
+            + "#{item}"
+            + "</foreach>"
+            + "</script>"
+            )
+    List<Expert> findExperts(@Param("expertsId") List<String> expertsId);
 
     @Update("update gaokao_appointment set expert_id=#{expert_id} where appointment_id=#{appointment_id}")
     int setExpert(@Param("appointment_id") int appointment_id,@Param("expert_id") int expert_id);

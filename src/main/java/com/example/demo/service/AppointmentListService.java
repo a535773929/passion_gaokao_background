@@ -52,7 +52,13 @@ public class AppointmentListService {
 
     public JSONArray findByGroup(int id){
 
-        List<Expert> experts = appointmentMapper.findByGroup(id);
+        String expertsId = appointmentMapper.findByGroup(id);
+        List<String> expertsId2 = java.util.Arrays.asList(expertsId.split(","));
+//        int[] expertsId3 = new int[expertsId2.length];
+//        for (int i=0;i<expertsId.length();i++){
+//            expertsId3[i]=Integer.parseInt(expertsId2[i]);
+//        }
+        List<Expert> experts = appointmentMapper.findExperts(expertsId2);
         JSONArray jsonList = JSONUtil.parseArray(experts);
         return jsonList;
     }
@@ -69,5 +75,7 @@ public class AppointmentListService {
         }
     }
     public String findExpert(int id){return appointmentMapper.findExpert(id);}
+
+
 }
 
