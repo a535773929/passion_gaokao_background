@@ -2,13 +2,11 @@ package com.example.demo.service;
 
 import com.alibaba.fastjson.JSONObject;
 import com.example.demo.Bean.HiddenNumberBean;
-import com.example.demo.mapper.CallingRecord;
-import org.apache.commons.lang3.ObjectUtils;
+import com.example.demo.mapper.CallingRecordMapper;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import javax.validation.constraints.Null;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -17,7 +15,7 @@ import java.util.GregorianCalendar;
 
 public class HostingVoiceEventDemoImpl {
     @Autowired
-    CallingRecord callingRecord;
+    CallingRecordMapper callingRecord;
 
     private Logger logger = LogManager.getLogger(HostingVoiceEventDemoImpl.class);
         /**
