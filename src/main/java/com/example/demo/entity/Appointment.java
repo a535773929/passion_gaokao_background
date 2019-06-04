@@ -7,6 +7,25 @@ public class Appointment {
     private int appointment_id;
     private int student_id;
 
+    private int group_id;
+    private int status;
+    private String appointment_time;
+    private int appointment_type;
+    private String appointment_address;
+    private String student_name;
+    private String group_name;
+    private String buy_time;
+    private int period;
+    private String expert_name;
+    private int expert_id;
+    private String x_number;
+    private int times;
+
+    private int status2;
+    private String appointment_time2;
+    private int period2;
+    private String x_number2;
+
     public int getAppointment_id() {
         return appointment_id;
     }
@@ -128,19 +147,48 @@ public class Appointment {
         this.times = times;
     }
 
-    private int group_id;
-    private int status;
-    private String appointment_time;
-    private int appointment_type;
-    private String appointment_address;
-    private String student_name;
-    private String group_name;
-    private String buy_time;
-    private int period;
-    private String expert_name;
-    private int expert_id;
-    private String x_number;
-    private int times;
+
+
+    public void setAppointment_time(String appointment_time) {
+        this.appointment_time = appointment_time;
+    }
+
+    public void setBuy_time(String buy_time) {
+        this.buy_time = buy_time;
+    }
+
+    public int getStatus2() {
+        return status2;
+    }
+
+    public void setStatus2(int status2) {
+        this.status2 = status2;
+    }
+
+    public String getAppointment_time2() {
+        return appointment_time2;
+    }
+
+    public void setAppointment_time2(String appointment_time2) {
+        this.appointment_time2 = appointment_time2;
+    }
+
+    public int getPeriod2() {
+        return period2;
+    }
+
+    public void setPeriod2(int period2) {
+        this.period2 = period2;
+    }
+
+    public String getX_number2() {
+        return x_number2;
+    }
+
+    public void setX_number2(String x_number2) {
+        this.x_number2 = x_number2;
+    }
+
 
 
 }

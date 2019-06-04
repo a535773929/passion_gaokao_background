@@ -29,21 +29,21 @@ public class AppointmentListService {
     @Autowired(required=false)
     AppointmentMapper appointmentMapper;
 
-    public JSONArray findAll(){
+    public JSONArray findCurrentAppointment(){
         Date now = new Date();
         SimpleDateFormat todayFormat=new SimpleDateFormat("yyyy-MM-dd  00:00:00");
         String today = todayFormat.format(now);
-        List<Appointment> appointmentsList = appointmentMapper.findAll(today);
+        List<Appointment> appointmentsList = appointmentMapper.findCurrentAppointment(today);
         System.out.println(appointmentsList);
-//        ArrayList<FinalAppointment> finalAppointments = new ArrayList<>();
-//        for(Appointment a:appointmentsList){
-//            FinalAppointment f = new FinalAppointment(a);
-//            finalAppointments.add(f);
-//        }
-//        JSONArray jsonList = JSONUtil.parseArray(finalAppointments);
-//        System.out.println(appointmentsList);
         JSONArray jsonList = JSONUtil.parseArray(appointmentsList);
 
+        return jsonList;
+    }
+
+    public JSONArray findAll(){
+        List<Appointment> appointmentsList = appointmentMapper.findAll();
+        System.out.println(appointmentsList);
+        JSONArray jsonList = JSONUtil.parseArray(appointmentsList);
         return jsonList;
     }
 

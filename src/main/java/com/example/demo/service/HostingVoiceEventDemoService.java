@@ -6,18 +6,18 @@ import com.example.demo.mapper.CallingRecordMapper;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.springframework.beans.factory.annotation.Autowired;
-
+import org.springframework.stereotype.Service;
+import com.example.demo.mapper.CallingRecordMapper;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 
-public class HostingVoiceEventDemoImpl {
-    @Autowired
-    CallingRecordMapper callingRecord;
+@Service
+public class HostingVoiceEventDemoService {
+    @Autowired(required = false)
+    CallingRecordMapper callingRecordMapper;
 
-    private Logger logger = LogManager.getLogger(HostingVoiceEventDemoImpl.class);
+       private Logger logger = LogManager.getLogger(HostingVoiceEventDemoService.class);
         /**
          * 呼叫事件 for AXB
          *
@@ -25,6 +25,7 @@ public class HostingVoiceEventDemoImpl {
          * @breif 详细内容以接口文档为准
          */
         String time= null;
+
         public String onCallEvent(JSONObject jsonBody,String data_time) throws ParseException{
             this.time=data_time;
             // 封装JOSN请求
@@ -135,7 +136,6 @@ public class HostingVoiceEventDemoImpl {
                 long rightTime = d2.getTime()+8*60*60*1000;
                 String rightTime2 = sdf.format(rightTime);
                 logger.info("振铃时间:"+rightTime2);
-
                 return "结束！";
             }
             //answer：应答事件
@@ -185,7 +185,6 @@ public class HostingVoiceEventDemoImpl {
                  * 'stateDesc': 通话挂机的原因值的描述
                  * 'subscriptionId': 绑定关系ID
                  */
-
                 HiddenNumberBean bean = new HiddenNumberBean();
                 String sessionId = statusInfo.getString("sessionId");
                 String subscriptionId=statusInfo.getString("subscriptionId");
@@ -216,16 +215,18 @@ public class HostingVoiceEventDemoImpl {
                     long nh = 1000 * 60 * 60;
                     long nm = 1000 * 60;
                     long ns = 1000 * 1;
-                    long diff = d2.getTime() - d1.getTime();
-                    int day = (int)(diff / nd);
-                    int hour = (int)(diff % nd / nh);
-                    int min = (int)(diff % nd % nh / nm);
-                    int s = (int)(diff % nd % nh % nm /ns);
+                    long diff = rightTime - d1.getTime();
+                    long day = diff / nd;
+                    long hour = diff % nd / nh;
+                    long min = diff % nd % nh / nm;
+                    long s = diff % nd % nh % nm /ns;
                     logger.info(sessionId+":"+day + "天" + hour + "小时" + min + "分钟"+s+"秒");
-                    String callingTime = Integer.toString(hour)+":h "+Integer.toString(min)+":s";
-                    Calendar myCalendar = new GregorianCalendar(2014, 2, 11);
+                    String callingTime = "拨打时间： "+rightTime2+" 通话时长："+Long.toString(hour)+":h "+Long.toString(min)+":min "+Long.toString(s)+":s";
+                    System.out.println("callingTime:"+callingTime);
+
+//                    Calendar myCalendar = new GregorianCalendar(2014, 2, 11);
                     try {
-                        callingRecord.recordCalling(subscriptionId,callingTime);
+                        callingRecordMapper.recordCalling(subscriptionId,callingTime);
                     } catch (Exception e) {
                         e.printStackTrace();
                         logger.info(sessionId+"记录写入数据库失败"+subscriptionId);

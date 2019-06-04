@@ -3,13 +3,15 @@ package com.example.demo.service;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.example.demo.Bean.HiddenNumberBean;
+import com.example.demo.mapper.CallingRecordMapper;
 import com.example.demo.util.HttpUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.text.ParseException;
+import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -17,7 +19,16 @@ import java.util.Map;
 
 @Service("privateNumberService")
 public  class PrivateNumberServiceImpl implements PrivateNumberService {
+    @Autowired
+    HostingVoiceEventDemoService hostingVoiceEventDemoService;
+    static private PrivateNumberServiceImpl privateNumberService;
+
+    @PostConstruct
+    public void init(){
+        privateNumberService =this;
+    }
     String event=null;
+    String DATE_TIME=null;
     private Logger logger = LogManager.getLogger(PrivateNumberServiceImpl.class);
     private String appKey="ui9B5arvF2vxzvNbr3BGSA6fWDz0"; // APP_Key;
     private String appSecret="Z3MZkzEo6HEPxq40wl4jHl5b4PbE"; // APP_Secret;
@@ -174,19 +185,16 @@ public  class PrivateNumberServiceImpl implements PrivateNumberService {
        }
 
    }
-   public String  PrivateNumberEvent(JSONObject numberEvent){
-        HostingVoiceEventDemoImpl event= new HostingVoiceEventDemoImpl();
-        try{
-        String bean=event.onCallEvent(numberEvent,this.event);
-        this.event=bean;
-            return bean;}
-        catch (Exception e){
+    public String  PrivateNumberEvent(JSONObject numberEvent){
 
-            logger.error(e);
-            return null;
-       }
+        HostingVoiceEventDemoService event= privateNumberService.hostingVoiceEventDemoService;
+        try {
+            String bean = event.onCallEvent(numberEvent, this.DATE_TIME);
+            this.DATE_TIME = bean;
+            return bean;
+        }catch(Exception e){
+            return "结束！";
+        }
+    }
 
-
-
-   }
 }
